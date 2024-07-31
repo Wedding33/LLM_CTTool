@@ -60,20 +60,11 @@ class DataWriter:
                 csv_writer.writerow(row_tuple)
 
 def init_dir():
+    #获取当前时间
     current_datetime = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")
     # 创建目录路径
     directory_path = os.path.join(os.getcwd(), "logs", current_datetime)
-
     # 检查目录是否存在，如果不存在则创建
     if not os.path.exists(directory_path):
         os.makedirs(directory_path)
     return directory_path
-
-if __name__ == "__main__":
-    import time
-    logger = WLogger("test")
-    logger.log("info", "1")
-    logger.log("info", "2")
-    time.sleep(1)
-    logger.log("info", "1")
-    logger.log("info", "2")
