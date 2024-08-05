@@ -18,14 +18,15 @@ if not os.path.isfile(config_path):
 # 加载动态config
 config = load_config(config_path)
 
-# 进行测试
+# 初始化测试
 prefix = init_dir()
 chat_model = ChatCompletions(config, prefix)
+
+# 启动线程池测试
 pool = RampUpThreadPool.from_config(config, task_method=ChatCompletions.send_request, task_instance=chat_model, prefix=prefix)
 pool.start()
 pool.wait_for_completion()
 
-#ramp_log_file = pool.ramp_log_file
 ramp_log_file = chat_model.ramp_logger.filename
 data_csv = chat_model.data_writer_file
 print(f"数据文件:{data_csv}")

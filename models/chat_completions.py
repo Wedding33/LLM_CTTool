@@ -23,8 +23,6 @@ class ChatCompletions:
         self.max_thread = config.max_workers
         self.logger = WLogger(f"{prefix}/response")
         self.ramp_logger = WLogger(f"{prefix}/RampUp_Model")
-        #self.response_logger = WLogger(f"{prefix}/response")
-        #self.data_logger = WLogger(f"{prefix}/completion_data")
         self.data_writer = DataWriter(f"{prefix}/completion_data")
         self.data_writer_file = self.data_writer.filename
         self.tokenizer_path = config.tokenizer_path
@@ -37,7 +35,7 @@ class ChatCompletions:
 
         self.start_time = 0
         self.stable_start_time = 0
-        self.total_end_time = time.time() + 60*1000
+        self.total_end_time = time.time()
         self.completed_tasks = 0
         self.running_task = set()
 
@@ -56,7 +54,7 @@ class ChatCompletions:
         return len(input_ids)
 
 
-    def send_request(self, statu, thread_id):
+    def send_request(self, status, thread_id):
         current_time = time.time()
         while current_time < self.total_end_time:
             if thread_id > self.max_thread:
@@ -66,8 +64,9 @@ class ChatCompletions:
                 self.running_task.add(thread_id)
             self.ramp_logger.log("info", f"完成线程总数: {self.completed_tasks}, 正在执行的线程数: {len(self.running_task)}, 最大线程数: {self.max_thread}")
             if current_time > self.stable_start_time:
-                statu = "保持"
+                status = "保持"
             result_line = None
+            
             # 多线程
             data = copy.deepcopy(self.data)
             try:
@@ -84,29 +83,29 @@ class ChatCompletions:
                 response = requests.post(self.url, json=data, headers=self.headers, verify=False, stream=True, timeout=60)
                 if response.status_code == 200:
                     if api_type == "multi":
-                        result_line =  self.process_response(response, start_time, prompt_token_num, statu, prompt.strip())
+                        result_line =  self.process_response(response, start_time, prompt_token_num, status, prompt.strip())
                     else:
-                        result_line =  self.process_response_single(response, start_time, prompt_token_num, statu, prompt.strip())
+                        result_line =  self.process_response_single(response, start_time, prompt_token_num, status, prompt.strip())
                 else:
-                    result_line = (False, statu, 0, 0, 0, 0, 0, 0, f"Response:{response.status_code}")
+                    result_line = (False, status, 0, 0, 0, 0, 0, 0, f"Response:{response.status_code}")
             except requests.ConnectionError as e:
                 #print("连接错误:", e)
-                result_line = (False, statu, 0, 0, 0, 0, 0, 0, "连接错误")
+                result_line = (False, status, 0, 0, 0, 0, 0, 0, "连接错误")
             except requests.HTTPError as e:
                 #print("HTTP错误:", e)
-                result_line = (False, statu, 0, 0, 0, 0, 0, 0, "HTTP错误")
+                result_line = (False, status, 0, 0, 0, 0, 0, 0, "HTTP错误")
             except Exception as e:
                 print(e)
                 traceback.print_exc()
                 exception_type = type(e).__name__  # 获取异常类型的名称
-                result_line = (False, statu, 0, 0, 0, 0, 0, 0, exception_type)
+                result_line = (False, status, 0, 0, 0, 0, 0, 0, exception_type)
             self.data_writer.write_row(result_line)
 
             self.completed_tasks += 1
             current_time = time.time()
             #self.ramp_logger.log("info", f"完成线程总数: {self.completed_tasks}, 正在执行的线程数: {len(self.running_task)}, 最大线程数: {self.max_thread}")
             if current_time > self.stable_start_time:
-                statu = "保持"
+                status = "保持"
             print(f"{self.total_end_time - current_time}")
             # if self.is_continue and current_time < self.total_end_time:
             #     self.send_request(statu, thread_id)

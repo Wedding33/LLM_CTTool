@@ -7,18 +7,22 @@ import threading
 
 class WLogger:
     def __init__(self, prefix, level=logging.INFO):
-        self.loggers = {}
         self.level = level
         self.prefix = prefix
         self.current_datetime = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")
-        self.filename = os.path.join("logs", f'{self.prefix}_{self.current_datetime}.log')
+        self.filename = f'{self.prefix}_{self.current_datetime}.log'
         self._get_logger()
 
     def _get_logger(self):
             # 创建新的logger
             logger = logging.getLogger(f'{self.prefix}_{self.current_datetime}')
             logger.setLevel(self.level)
+
             # 创建日志格式
+            # %(asctime)s：日志事件发生的时间。
+            # %(name)s：记录器的名称。
+            # %(levelname)s：日志级别（例如 DEBUG、INFO、WARNING、ERROR、CRITICAL）。
+            # %(message)s：日志消息。 
             formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
             # 创建文件处理器，设置编码为 utf-8
@@ -42,7 +46,7 @@ class DataWriter:
         self.prefix = prefix
         self.suffix = suffix
         self.lock = threading.Lock()
-        self.filename = os.path.join("data", self._generate_filename())
+        self.filename = self._generate_filename()
         self.write_row(("是否执行成功", "状态", "prompt token数", "响应token数","总token数", "收到第一个token耗时", "收到所有token耗时", "最后一个token与第一个token时间差", "失败原因"))
 
     def _generate_filename(self):

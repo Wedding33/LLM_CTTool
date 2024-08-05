@@ -42,28 +42,32 @@ class RampUpThreadPool:
     def start(self):
         self.start_time = time.time()
         self.up_end_time = self.start_time + self.ramp_up_time
-        # 任务开始提交耗时，修正2秒
         self.total_end_time = self.start_time + self.continuous_time + self.ramp_up_time
-        print(f"开始线程池 开始 {self.start_time}  结束 {self.total_end_time}")
-        statu = "上升"
+
+        print("开始线程池")
+        status = "上升"
         if self.ramp_up_time > 0:
             self.current_tasks = 0
         else:
-            statu = "保持"
-            print(f"提交线程：{self.task_method}   {self.task_instance} 提交任务数量:{self.max_workers}")
+            status = "保持"
+            print(f"提交任务数量:{self.max_workers}")
             self.current_tasks = 0
             self.current_target_task = self.max_workers
 
-        statu = "上升"
+        status = "上升"
         self.task_instance.start_time = time.time()
+        # task_instance作用：传递submit函数需要用到
+        
         for thread_id in range(self.max_workers):
-            self.executor.submit(self.task_method, self.task_instance, statu, thread_id)
+            self.executor.submit(self.task_method, self.task_instance, status, thread_id)
         print("任务提交完成")
+
         self.task_instance.stable_start_time = time.time()
         self.task_instance.total_end_time = time.time() + self.continuous_time
 
         while time.time() < self.total_end_time:
             time.sleep(2)
+        # time.sleep(2)的作用是避免繁忙等待，通过每2秒钟暂停一次来减少CPU的使用率，并实现一种轮询等待机制，确保在 self.total_end_time 之前程序持续运行。
 
     def stop(self):
         self.executor.shutdown(wait=True)

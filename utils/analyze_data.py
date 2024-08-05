@@ -72,10 +72,3 @@ def analyze_csv_data(filename, prefix=""):
         file.write(formatted_stats)
     print(f"：{formatted_stats}")
     return formatted_stats
-
-if __name__ == "__main__":
-    completed_file = "data\mars_v2_data_2024-01-17_16-08-51.csv"
-    completed_file = "data\mars_v2_data_2024-01-21_14-24-43.csv"
-    completed_file = "logs/2024-02-01_11-03/mars_v2_data_2024-02-01_11-03-39.csv"
-    stats_text = analyze_csv_data(completed_file)
-    print(stats_text)
