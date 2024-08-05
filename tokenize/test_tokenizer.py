@@ -4,7 +4,7 @@ line = "蒙古国的首都是乌兰巴托（Ulaanbaatar）\n冰岛的首都是�
 line = "在EPC网络中哪个网元负责为UE分配IP地址?"
 
 
-tokenizer = AutoTokenizer.from_pretrained("./models/qwen/Qwen-72B/", trust_remote_code=True, use_fast=False)
+tokenizer = AutoTokenizer.from_pretrained("tokenize/models/qwen/Qwen-72B/", trust_remote_code=True, use_fast=False)
 inputs = tokenizer(line, return_tensors='pt')
 input_ids = inputs.input_ids[0]
 print(f"token 的id, input_ids:{input_ids}")
