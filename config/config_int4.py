@@ -7,7 +7,7 @@ continuous_time = 200
 
 # 读取prompt_file 中的内容发送给大模型，一行是一个prompt
 prompt_file = "data/64.csv"
-tokenizer_path = "tokenize/models/qwen/Qwen-72B/"
+tokenizer_path = "tokenizer/Qwen-72B/"
 
 # ----------接口相关配置-----------
 api_headers = {
@@ -16,7 +16,7 @@ api_headers = {
 }
 
 api_url = "http://10.57.136.28:7888/v1/chat/completions"
-model_name = "eval_ZTEAIM-LLaMA3-70B-Instruct"
+model_name = "eval_ZTEAIM-Qtest2-72-instruct"
 
 api_data = dict(
     model=model_name,
