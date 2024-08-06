@@ -11,6 +11,7 @@ class WLogger:
         self.prefix = prefix
         self.current_datetime = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")
         self.filename = f'{self.prefix}_{self.current_datetime}.log'
+        self.filename = os.path.join("logs", f'{self.prefix}_{self.current_datetime}.log')
         self._get_logger()
 
     def _get_logger(self):
@@ -23,7 +24,7 @@ class WLogger:
             # %(name)s：记录器的名称。
             # %(levelname)s：日志级别（例如 DEBUG、INFO、WARNING、ERROR、CRITICAL）。
             # %(message)s：日志消息。 
-            formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+            formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 
             # 创建文件处理器，设置编码为 utf-8
             fh = logging.FileHandler(self.filename, encoding='utf-8')
@@ -47,6 +48,7 @@ class DataWriter:
         self.suffix = suffix
         self.lock = threading.Lock()
         self.filename = self._generate_filename()
+        self.filename = os.path.join("data", self._generate_filename())
         self.write_row(("是否执行成功", "状态", "prompt token数", "响应token数","总token数", "收到第一个token耗时", "收到所有token耗时", "最后一个token与第一个token时间差", "失败原因"))
 
     def _generate_filename(self):
@@ -57,6 +59,7 @@ class DataWriter:
         with self.lock:
             with open(self.filename, 'a', encoding="utf-8") as file:  # 使用 'a' 模式以追加数据
                 file.write(line + '\n')
+
     def write_row(self, row_tuple):
         with self.lock:
             with open(self.filename, 'a', newline='', encoding="utf-8") as file:
@@ -64,7 +67,7 @@ class DataWriter:
                 csv_writer.writerow(row_tuple)
 
 def init_dir():
-    #获取当前时间
+    # 获取当前时间
     current_datetime = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")
     # 创建目录路径
     directory_path = os.path.join(os.getcwd(), "logs", current_datetime)

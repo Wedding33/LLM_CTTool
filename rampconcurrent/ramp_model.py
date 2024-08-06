@@ -21,7 +21,6 @@ class RampUpThreadPool:
         self.current_tasks = 0
         self.lock = threading.Lock()
         self.submit_lock = threading.Lock()
-        #self.ramp_step = max_workers // ramp_up_time
         self.logger = WLogger(f"{prefix}/RampUp_Model")
         self.current_target_task = 0
         self.last_target_task = 0
@@ -57,7 +56,7 @@ class RampUpThreadPool:
         status = "上升"
         self.task_instance.start_time = time.time()
         # task_instance作用：传递submit函数需要用到
-        
+
         for thread_id in range(self.max_workers):
             self.executor.submit(self.task_method, self.task_instance, status, thread_id)
         print("任务提交完成")
