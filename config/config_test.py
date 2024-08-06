@@ -1,5 +1,5 @@
 # 最大并发数
-max_workers = 2
+max_workers = 1
 # 爬升时间
 ramp_up_time = 0
 # 最大并发持续时间
@@ -12,11 +12,10 @@ tokenizer_path = "tokenizer/Qwen-72B/"
 # ----------接口相关配置-----------
 api_headers = {
     "Content-Type": "application/json",
-    "Authorization": "TEST-46542881-54d4-4096-b93d-6d5a3db326ac"
 }
 
-api_url = "http://10.57.136.28:7888/v1/chat/completions"
-model_name = "eval_RAG2.0_qwen2_7B"
+api_url = "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/yi_34b_chat?access_token=" + "24.4141871cf9a4c2eb1970d44065911884.2592000.1725526993.282335-103733095"
+model_name = "Yi-34B-Chat"
 
 api_data = dict(
     model=model_name,
@@ -27,9 +26,9 @@ api_data = dict(
     n=1,
     best_of=1,
     max_tokens=2048,
-    temperature=0,
+    temperature=0.1,
     use_beam_search=False,
-    presence_penalty=1.2,
+    penalty_score=1.2,
     frequency_penalty=0,
     stream=True,
     ignore_eos=True

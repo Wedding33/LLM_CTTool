@@ -114,7 +114,8 @@ class ChatCompletions:
             if current_time > self.stable_start_time:
                 status = "保持"
             print(f"线程{thread_id}剩余时间：{self.total_end_time - current_time}")
-
+        
+            time.sleep(2) # 防止线程请求频率过高
 
     def process_response_single(self, response, start_time, prompt_token_num, status, prompt):
         completion_token_num = prompt_token_num
@@ -159,22 +160,27 @@ class ChatCompletions:
         full_token_time = 0
         tokens = []
         response_token_num = 0
+        result=""
 
         for line in response.iter_lines():
-            # print(line)
+            print(line)
             try:
                 if line:
                     json_str = line.decode("utf-8").lstrip('data: ')
                     if json_str.startswith("{") and json_str.endswith("}"):
                         json_data = json.loads(json_str)
-                        choice_0 = json_data['choices'][0]
-                        if 'content' in choice_0['delta']:
-                            completion_token_num += 1
-                            tk = choice_0['delta']['content']
-                            if not first_token:
-                                first_token = tk
-                                first_token_time = time.time()
-                            tokens.append(tk)
+                        # choice_0 = json_data['choices'][0]
+                        result = result + json_data['result']
+                        # if 'content' in choice_0['delta']:
+                        #     completion_token_num += 1
+                        #     tk = choice_0['delta']['content']
+                        #     if not first_token:
+                        #         first_token = tk
+                        #         first_token_time = time.time()
+                        #     tokens.append(tk)
+
+                        if json_data['is_end'] == True:
+                            print(result)
 
             except Exception as e:
                 self.logger.log("info", f"{e}  {line}")
@@ -184,7 +190,8 @@ class ChatCompletions:
         full_token_time = time.time()
         response_token_num = len(tokens)
         full_text = "".join(tokens)
-        self.logger.log("info", f"prompt: {prompt}  \n回答: {full_text}") 
+        # self.logger.log("info", f"prompt: {prompt}  \n回答: {full_text}") 
+        self.logger.log("info", f"prompt: {prompt}  \n回答: {result}") 
 
         # 是否执行成功,状态,prompt token数,响应token数,总token数,收到第一个token耗时,收到所有token耗时,最后一个token与第一个token时间差,失败原因
         return True, status, prompt_token_num, response_token_num, completion_token_num, first_token_time - start_time, full_token_time - start_time, full_token_time - first_token_time, ""
