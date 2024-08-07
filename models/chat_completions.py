@@ -113,7 +113,7 @@ class ChatCompletions:
             current_time = time.time()
             if current_time > self.stable_start_time:
                 status = "保持"
-            print(f"线程{thread_id}剩余时间：{self.total_end_time - current_time}")
+            print(f"线程{thread_id}剩余时间：{self.total_end_time - current_time}\n")
         
             time.sleep(2) # 防止线程请求频率过高
 
@@ -163,7 +163,7 @@ class ChatCompletions:
         result=""
 
         for line in response.iter_lines():
-            print(line)
+            # print(line)
             try:
                 if line:
                     json_str = line.decode("utf-8").lstrip('data: ')
@@ -171,6 +171,9 @@ class ChatCompletions:
                         json_data = json.loads(json_str)
                         # choice_0 = json_data['choices'][0]
                         result = result + json_data['result']
+                        if not first_token:
+                            first_token = result
+                            first_token_time = time.time()
                         # if 'content' in choice_0['delta']:
                         #     completion_token_num += 1
                         #     tk = choice_0['delta']['content']
@@ -180,7 +183,9 @@ class ChatCompletions:
                         #     tokens.append(tk)
 
                         if json_data['is_end'] == True:
-                            print(result)
+                            response_token_num = json_data['usage']['completion_tokens']
+                            completion_token_num  = json_data['usage']['total_tokens']
+                            print("输出结果：\n", result,"\n")
 
             except Exception as e:
                 self.logger.log("info", f"{e}  {line}")
@@ -189,7 +194,7 @@ class ChatCompletions:
 
         full_token_time = time.time()
         response_token_num = len(tokens)
-        full_text = "".join(tokens)
+        # full_text = "".join(tokens)
         # self.logger.log("info", f"prompt: {prompt}  \n回答: {full_text}") 
         self.logger.log("info", f"prompt: {prompt}  \n回答: {result}") 
 

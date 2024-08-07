@@ -1,15 +1,16 @@
 # 最大并发数
-max_workers = 1
+max_workers = 2
 # 爬升时间
 ramp_up_time = 0
 # 最大并发持续时间
 continuous_time = 100
 
 # 读取prompt_file 中的内容发送给大模型，一行是一个prompt
-prompt_file = "data/64.csv"
+prompt_file = "data/long_prompt.csv"
 tokenizer_path = "tokenizer/Qwen-72B/"
 
 # ----------接口相关配置-----------
+
 api_headers = {
     "Content-Type": "application/json",
 }
