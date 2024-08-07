@@ -8,7 +8,7 @@ from utils.config_utils import load_config
 
 # 设置运行参数
 parser = argparse.ArgumentParser(description='Run the application with a specific config.')
-parser.add_argument('-config', default="./config/config_test.py", help='The config file to use, e.g., config/config.py')
+parser.add_argument('-config', default="./config/config_baidu_Yi-34B.py", help='The config file to use, e.g., config/config.py')
 args = parser.parse_args()
 
 config_path = args.config
