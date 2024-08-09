@@ -1,2 +1,2 @@
-# LLM_CTTool
+# CTkit
 Large model concurrency testing tool
